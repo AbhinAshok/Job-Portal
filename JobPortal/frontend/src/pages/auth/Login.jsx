@@ -1,56 +1,102 @@
 import { useForm } from "react-hook-form";
-import api from "../../api/axios";
-
 import { useDispatch } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
+
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+} from "@mui/material";
+
+import api from "../../api/axios";
 import { loginSuccess } from "../../app/slices/authSlice";
 
-import { useNavigate } from "react-router-dom";
-
 const Login = () => {
-  const { register, handleSubmit } =
-    useForm();
+  const { register, handleSubmit } = useForm();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     try {
-      const res = await api.post(
-        "accounts/login/",
-        data
-      );
+      const res = await api.post("accounts/login/", data);
 
-      dispatch(
-        loginSuccess(res.data)
-      );
+      dispatch(loginSuccess(res.data));
 
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <h2>Login</h2>
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <Paper
+          elevation={8}
+          sx={{
+            width: "100%",
+            p: 5,
+            borderRadius: 3,
+          }}
+        >
+          <Typography
+            variant="h4"
+            align="center"
+            mb={4}
+            fontWeight="bold"
+          >
+            Job Portal Login
+          </Typography>
 
-      <input
-        placeholder="Email"
-        {...register("email")}
-      />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              label="Email"
+              fullWidth
+              margin="normal"
+              {...register("email")}
+            />
 
-      <input
-        type="password"
-        placeholder="Password"
-        {...register("password")}
-      />
+            <TextField
+              label="Password"
+              type="password"
+              fullWidth
+              margin="normal"
+              {...register("password")}
+            />
 
-      <button type="submit">
-        Login
-      </button>
-    </form>
+            <Button
+              variant="contained"
+              size="large"
+              fullWidth
+              sx={{ mt: 3 }}
+              type="submit"
+            >
+              Login
+            </Button>
+          </form>
+
+          <Typography
+            align="center"
+            mt={3}
+          >
+            Don't have an account?{" "}
+            <Link to="/register">
+              Register
+            </Link>
+          </Typography>
+        </Paper>
+      </Box>
+    </Container>
   );
 };
 
