@@ -1,25 +1,2 @@
-from rest_framework.permissions import BasePermission
-
-
-class IsCandidate(
-    BasePermission
-):
-
-    def has_permission(
-        self,
-        request,
-        view
-    ):
-        return request.user.role == "candidate"
-
-
-class IsRecruiter(
-    BasePermission
-):
-
-    def has_permission(
-        self,
-        request,
-        view
-    ):
-        return request.user.role == "recruiter"
+# Permissions are centralized in accounts.permissions
+# Import from there: from accounts.permissions import IsCandidate, IsRecruiter

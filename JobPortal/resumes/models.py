@@ -1,6 +1,6 @@
 from django.db import models
+from django.conf import settings
 
-from JobPortal import settings
 
 class ParsedResume(models.Model):
 
@@ -13,7 +13,9 @@ class ParsedResume(models.Model):
         upload_to="resumes/"
     )
 
-    extracted_text = models.TextField()
+    extracted_text = models.TextField(
+        blank=True
+    )
 
     extracted_skills = models.JSONField(
         default=list
@@ -23,4 +25,5 @@ class ParsedResume(models.Model):
         auto_now_add=True
     )
 
-
+    def __str__(self):
+        return f"Resume for {self.candidate.email}"

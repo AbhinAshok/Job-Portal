@@ -1,6 +1,4 @@
 from django.db import models
-
-from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin
@@ -91,3 +89,14 @@ class CandidateProfile(models.Model):
     bio = models.TextField(
         blank=True
     )
+
+    def __str__(self):
+        return f"{self.user.email}'s profile"
+
+
+
+class User(models.Model):
+    name = models.CharField(max_length=200)
+    phone= models.CharField(max_length=255)
+
+    

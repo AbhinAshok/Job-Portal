@@ -3,9 +3,9 @@ from rest_framework import serializers
 from .models import (
     Job,
     Skill,
-    JobCategory
+    JobCategory,
+    SavedJob
 )
-
 
 
 class SkillSerializer(
@@ -45,3 +45,14 @@ class JobSerializer(
             "recruiter"
         ]
 
+
+class SavedJobSerializer(
+    serializers.ModelSerializer
+):
+
+    job = JobSerializer(read_only=True)
+
+    class Meta:
+        model = SavedJob
+        fields = "__all__"
+        read_only_fields = ["user"]

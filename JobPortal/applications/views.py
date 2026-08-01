@@ -1,19 +1,23 @@
-from django.shortcuts import render
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
-from django.db.models import Count
 from rest_framework.views import APIView
-
+from django.shortcuts import get_object_or_404
 
 from accounts.permissions import IsCandidate, IsRecruiter
 from interviews.models import Interview
-from jobs.models import SavedJob
+from jobs.models import SavedJob, Job
 
-from .models import *
-from .serializers import *
+from .models import (
+    Application,
+    ApplicationStatusHistory,
+    RecruiterNote
+)
+from .serializers import (
+    ApplicationSerializer,
+    StatusUpdateSerializer
+)
 from .services import calculate_match_score
 
 from accounts.models import CandidateProfile
@@ -28,6 +32,10 @@ class ApplyJobViewSet(
     permission_classes = [
         IsAuthenticated,
         IsCandidate
+    ]
+
+    http_method_names = [
+        'get', 'post', 'head', 'options'
     ]
 
     def get_queryset(self):
@@ -64,7 +72,8 @@ class ApplyJobViewSet(
 
 
 class CandidateApplicationViewSet(
-viewsets.ReadOnlyModelViewSet):
+    viewsets.ReadOnlyModelViewSet
+):
 
     serializer_class = ApplicationSerializer
 
@@ -77,7 +86,6 @@ viewsets.ReadOnlyModelViewSet):
         return Application.objects.filter(
             candidate=self.request.user
         )
-
 
 
 class RecruiterApplicationsViewSet(
@@ -113,7 +121,8 @@ class UpdateApplicationStatusAPIView(
         pk
     ):
 
-        application = Application.objects.get(
+        application = get_object_or_404(
+            Application,
             pk=pk
         )
 
@@ -182,6 +191,7 @@ class RecruiterDashboardAPIView(
             "hired": hired_count
         })
 
+
 class ATSPipelineAPIView(
     APIView
 ):
@@ -223,10 +233,13 @@ class ATSPipelineAPIView(
         return Response(data)
 
 
-
 class CandidateDashboardAPIView(
     APIView
 ):
+
+    permission_classes = [
+        IsAuthenticated
+    ]
 
     def get(self, request):
 
@@ -248,3 +261,38 @@ class CandidateDashboardAPIView(
                 ).count(),
         })
 
+
+class AddRecruiterNoteAPIView(
+    APIView
+):
+
+    permission_classes = [
+        IsAuthenticated,
+        IsRecruiter
+    ]
+
+    def post(self, request, pk):
+
+        application = get_object_or_404(
+            Application,
+            pk=pk
+        )
+
+        note_text = request.data.get("note", "")
+
+        if not note_text:
+            return Response(
+                {"detail": "Note is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        RecruiterNote.objects.create(
+            application=application,
+            recruiter=request.user,
+            note=note_text
+        )
+
+        return Response(
+            {"message": "Note added"},
+            status=status.HTTP_201_CREATED
+        )

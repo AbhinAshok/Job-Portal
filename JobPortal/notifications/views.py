@@ -1,11 +1,22 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+
+from .models import Notification
 from .serializers import NotificationSerializer
+
 
 class NotificationViewSet(
     viewsets.ReadOnlyModelViewSet
 ):
 
     serializer_class = NotificationSerializer
+
+    permission_classes = [
+        IsAuthenticated
+    ]
 
     def get_queryset(self):
 
@@ -18,9 +29,14 @@ class MarkNotificationReadAPIView(
     APIView
 ):
 
+    permission_classes = [
+        IsAuthenticated
+    ]
+
     def patch(self, request, pk):
 
-        notification = Notification.objects.get(
+        notification = get_object_or_404(
+            Notification,
             pk=pk,
             recipient=request.user
         )
@@ -31,5 +47,3 @@ class MarkNotificationReadAPIView(
         return Response({
             "message": "Notification marked as read"
         })
-
-

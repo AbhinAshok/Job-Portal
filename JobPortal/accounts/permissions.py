@@ -10,7 +10,11 @@ class IsRecruiter(
         request,
         view
     ):
-        return request.user.role == "recruiter"
+        return (
+            request.user
+            and request.user.is_authenticated
+            and request.user.role == "recruiter"
+        )
 
 
 class IsCandidate(
@@ -22,6 +26,8 @@ class IsCandidate(
         request,
         view
     ):
-        return request.user.role == "candidate"
-
-
+        return (
+            request.user
+            and request.user.is_authenticated
+            and request.user.role == "candidate"
+        )

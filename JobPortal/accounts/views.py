@@ -1,12 +1,11 @@
-from django.shortcuts import render
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
-from . models import CustomUser
+from .models import CustomUser
 
 from .serializers import (
-    RegisterSerializer
+    RegisterSerializer,
+    CandidateProfileSerializer
 )
 
 
@@ -18,15 +17,10 @@ class RegisterAPIView(generics.CreateAPIView):
 
 class UserView(APIView):
 
-    def get(request):
+    def get(self, request):
         user = CustomUser.objects.all()
         serializer = RegisterSerializer(user, many=True)
         return Response(serializer.data)
-    
-
-
-
-
 
 
 class CandidateProfileAPIView(
@@ -37,9 +31,16 @@ class CandidateProfileAPIView(
         self,
         request
     ):
+        try:
+            profile = request.user.candidate_profile
+        except Exception:
+            return Response(
+                {"detail": "Profile not found"},
+                status=404
+            )
 
         serializer = CandidateProfileSerializer(
-            request.user.candidate_profile
+            profile
         )
 
         return Response(
@@ -50,8 +51,13 @@ class CandidateProfileAPIView(
         self,
         request
     ):
-
-        profile = request.user.candidate_profile
+        try:
+            profile = request.user.candidate_profile
+        except Exception:
+            return Response(
+                {"detail": "Profile not found"},
+                status=404
+            )
 
         serializer = CandidateProfileSerializer(
             profile,
@@ -68,5 +74,3 @@ class CandidateProfileAPIView(
         return Response(
             serializer.data
         )
-
-

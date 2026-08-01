@@ -1,6 +1,6 @@
 from django.db import models
+from django.conf import settings
 
-from JobPortal import settings
 
 class Interview(models.Model):
 
@@ -12,7 +12,8 @@ class Interview(models.Model):
 
     application = models.ForeignKey(
         "applications.Application",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="interviews"
     )
 
     recruiter = models.ForeignKey(
@@ -40,4 +41,5 @@ class Interview(models.Model):
         auto_now_add=True
     )
 
-
+    def __str__(self):
+        return f"Interview for {self.application}"

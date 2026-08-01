@@ -1,7 +1,16 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from .views import *
+from .views import (
+    ApplyJobViewSet,
+    CandidateApplicationViewSet,
+    RecruiterApplicationsViewSet,
+    UpdateApplicationStatusAPIView,
+    RecruiterDashboardAPIView,
+    ATSPipelineAPIView,
+    CandidateDashboardAPIView,
+    AddRecruiterNoteAPIView,
+)
 
 router = DefaultRouter()
 
@@ -33,6 +42,11 @@ urlpatterns = [
     ),
 
     path(
+        "applications/<int:pk>/notes/",
+        AddRecruiterNoteAPIView.as_view()
+    ),
+
+    path(
         "dashboard/",
         RecruiterDashboardAPIView.as_view()
     ),
@@ -40,6 +54,11 @@ urlpatterns = [
     path(
         "ats-pipeline/",
         ATSPipelineAPIView.as_view()
+    ),
+
+    path(
+        "candidate-dashboard/",
+        CandidateDashboardAPIView.as_view()
     ),
 
 ] + router.urls

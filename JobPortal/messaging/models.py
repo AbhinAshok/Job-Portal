@@ -1,5 +1,6 @@
 from django.db import models
-from JobPortal import settings
+from django.conf import settings
+
 
 class Conversation(models.Model):
 
@@ -18,6 +19,10 @@ class Conversation(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True
     )
+
+    def __str__(self):
+        return f"Conversation {self.id}"
+
 
 class Message(models.Model):
 
@@ -42,5 +47,5 @@ class Message(models.Model):
         auto_now_add=True
     )
 
-
-
+    def __str__(self):
+        return f"Message {self.id} in conversation {self.conversation_id}"

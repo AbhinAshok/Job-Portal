@@ -3,6 +3,9 @@ def calculate_match_score(
     required_skills
 ):
 
+    if not candidate_skills:
+        return 0
+
     candidate_set = set(
         skill.strip().lower()
         for skill in candidate_skills.split(",")
